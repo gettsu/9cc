@@ -32,6 +32,19 @@ void error (char *fmt, ...){
     exit(1);
 }
 
+char *user_input;
+char error_at(char *loc, char *fmt, ...){
+    va_list ap;
+    va_start(ap,fmt);
+    int pos = loc - user_input;
+    fprintf(stderr, "%s\n", user_input);
+    fprintf(stderr, "%*s", pos, " "); // pos個の空白を出力
+    fprintf(stderr, "^ ");
+    vfprintf(stderr, fmt, ap);
+    fprintf(stderr, "\n");
+    exit(1);
+}
+
 // 次のトークンが期待している記号のときは，トークンを一つ読み進めて真を返す．
 bool consume(char op){
     if (token->kind != TK_RESERVED || token->str[0] != op) return false;
@@ -49,7 +62,7 @@ void expect(char op) {
 
 int expect_number() {
     if (token -> kind != TK_NUM){
-        error("数ではありません");
+        error_at(token->str,"数ではありません");
     }
     int val = token -> val;
     token = token -> next;
@@ -100,6 +113,7 @@ int main(int argc, char ** argv){
         fprintf(stderr, "引数の個数が足りません");
         return 1;
     }
+    user_input = argv[1];
     token = tokenize(argv[1]);
 
     printf(".intel_syntax noprefix\n");

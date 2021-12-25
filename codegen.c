@@ -53,9 +53,10 @@ void codegen(Node *node) {
     printf(".globl main\n");
     printf("main:\n");
 
-    gen(node);
-
-    printf("    pop rax\n");
+    for (Node *n = node; n; n = n->next) {
+        gen(n);
+        printf("    pop rax\n");
+    }
 
     printf("    ret\n");
 }

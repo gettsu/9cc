@@ -12,6 +12,7 @@ typedef enum {
     TK_RESERVED,  // 記号
     TK_NUM,       // 整数
     TK_EOF,       // 入力終わり
+    TK_IDENT,     // 識別子
 } TokenKind;
 
 typedef struct Token Token;
@@ -52,12 +53,13 @@ typedef struct Node Node;
 
 struct Node {
     NodeKind kind;
+    Node *next;
     Node *lhs;
     Node *rhs;
     int val;
 };
 
-Node *expr();
+Node *program();
 
 void codegen(Node *node);
 

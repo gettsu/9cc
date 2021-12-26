@@ -1,10 +1,10 @@
 #include "9cc.h"
 
 void gen_lval(Node *node) {
-    if (node->kind != ND_LVAR) error("代入の左辺が変数ではありません");
+    if (node->kind != ND_VAR) error("代入の左辺が変数ではありません");
 
     printf("    mov rax, rbp\n");
-    printf("    sub rax, %d\n", node->offset);
+    printf("    sub rax, %d\n", node->var->offset);
     printf("    push rax\n");
 }
 
@@ -13,7 +13,7 @@ void gen(Node *node) {
         case ND_NUM:
             printf("    push %d\n", node->val);
             return;
-        case ND_LVAR:
+        case ND_VAR:
             gen_lval(node);
             printf("    pop rax\n");
             printf("    mov rax, [rax]\n");
@@ -72,17 +72,17 @@ void gen(Node *node) {
     printf("    push rax\n");
 }
 
-void codegen(Node *node) {
+void codegen(Program *prog) {
     printf(".intel_syntax noprefix\n");
     printf(".globl main\n");
     printf("main:\n");
 
     printf("    push rbp\n");
     printf("    mov rbp, rsp\n");
-    printf("    sub rsp, 208\n");
+    printf("    sub rsp, %d\n", prog->stack_size);
 
-    for (Node *n = node; n; n = n->next) {
-        gen(n);
+    for (Node *node = prog->node; node; node = node->next) {
+        gen(node);
         printf("    pop rax\n");
     }
 

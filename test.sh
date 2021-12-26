@@ -48,6 +48,6 @@ assert 0 '1>=2;'
 
 assert 3 '1; 2; 3;'
 
-assert 5 'a = 3;a+2;'
+assert 5 'f = 3;f+2;'
 
 echo OK

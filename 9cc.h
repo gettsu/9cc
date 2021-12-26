@@ -28,6 +28,7 @@ struct Token {
 void error(char *fmt, ...);
 void error_at(char *loc, char *fmt, ...);
 bool consume(char *op);
+char *strndup(char *p, int len);
 Token *consume_ident();
 void expect(char *op);
 int expect_number();
@@ -49,10 +50,19 @@ typedef enum {
     ND_LT,
     ND_LE,
     ND_ASSIGN,
-    ND_LVAR,  // ローカル変数
+    ND_VAR,  // 変数
 } NodeKind;
 
 typedef struct Node Node;
+
+typedef struct Var Var;
+
+struct Var {
+    Var *next;   // 次の変数orNULL
+    char *name;  // 変数名
+    int len;     // 名前の長さ
+    int offset;  // RBPからのオフセット
+};
 
 struct Node {
     NodeKind kind;
@@ -60,11 +70,19 @@ struct Node {
     Node *lhs;
     Node *rhs;
     int val;
-    int offset;  // kindがND_LVARのときのみ使う
+    Var *var;
 };
 
-Node *program();
+Var *find_lvar(Token *tok);
 
-void codegen(Node *node);
+typedef struct {
+    Node *node;
+    Var *locals;
+    int stack_size;
+} Program;
+
+Program *program();
+
+void codegen(Program *prog);
 
 #endif

@@ -1,5 +1,16 @@
 #include "9cc.h"
 
+Var *locals;
+
+Var *find_var(Token *tok) {
+    for (Var *var = locals; var; var = var->next) {
+        if (strlen(var->name) == tok->len &&
+            !memcmp(tok->str, var->name, tok->len))
+            return var;
+    }
+    return NULL;
+}
+
 Node *new_node(NodeKind kind) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = kind;
@@ -19,6 +30,20 @@ Node *new_num(int val) {
     return node;
 }
 
+Node *new_var(Var *var) {
+    Node *node = new_node(ND_VAR);
+    node->var = var;
+    return node;
+}
+
+Var *push_var(char *name) {
+    Var *var = calloc(1, sizeof(Var));
+    var->next = locals;
+    var->name = name;
+    locals = var;
+    return var;
+}
+
 Node *stmt();
 Node *expr();
 Node *assign();
@@ -30,7 +55,8 @@ Node *unary();
 Node *primary();
 
 // program = stmt*
-Node *program() {
+Program *program() {
+    locals = NULL;
     Node head;
     head.next = NULL;
     Node *cur = &head;
@@ -38,7 +64,10 @@ Node *program() {
         cur->next = stmt();
         cur = cur->next;
     }
-    return head.next;
+    Program *prog = calloc(1, sizeof(Program));
+    prog->node = head.next;
+    prog->locals = locals;
+    return prog;
 }
 
 // stmt = expr";"
@@ -133,9 +162,12 @@ Node *primary() {
     Token *tok = consume_ident();
     if (tok) {
         Node *node = calloc(1, sizeof(Node));
-        node->kind = ND_LVAR;
-        node->offset = (tok->str[0] - 'a' + 1) * 8;
-        return node;
+        node->kind = ND_VAR;
+        Var *var = find_var(tok);
+        if (!var) {
+            var = push_var(strndup(tok->str, tok->len));
+        }
+        return new_var(var);
     }
 
     return new_num(expect_number());

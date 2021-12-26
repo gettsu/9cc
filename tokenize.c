@@ -32,6 +32,15 @@ bool consume(char *op) {
     return true;
 }
 
+Token *consume_ident() {
+    if (token->kind != TK_IDENT) {
+        return NULL;
+    }
+    Token *tok = token;
+    token = token->next;
+    return tok;
+}
+
 // 次のトークンが期待している記号のときは，トークンを一つ読み進める．
 void expect(char *op) {
     if (token->kind != TK_RESERVED || strlen(op) != token->len ||
@@ -80,7 +89,7 @@ Token *tokenize(char *p) {
             p += 2;
             continue;
         }
-        if (strchr("+-*/()<>;", *p)) {
+        if (strchr("+-*/()<>=;", *p)) {
             cur = new_token(TK_RESERVED, cur, p++, 1);
             continue;
         }
@@ -95,7 +104,6 @@ Token *tokenize(char *p) {
 
         if ('a' <= *p && *p <= 'z') {
             cur = new_token(TK_IDENT, cur, p++, 0);
-            cur->len = 1;
             continue;
         }
         error_at(p, "invalid token");

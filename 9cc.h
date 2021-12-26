@@ -28,6 +28,7 @@ struct Token {
 void error(char *fmt, ...);
 void error_at(char *loc, char *fmt, ...);
 bool consume(char *op);
+Token *consume_ident();
 void expect(char *op);
 int expect_number();
 bool at_eof();
@@ -47,6 +48,8 @@ typedef enum {
     ND_NE,
     ND_LT,
     ND_LE,
+    ND_ASSIGN,
+    ND_LVAR,  // ローカル変数
 } NodeKind;
 
 typedef struct Node Node;
@@ -57,6 +60,7 @@ struct Node {
     Node *lhs;
     Node *rhs;
     int val;
+    int offset;  // kindがND_LVARのときのみ使う
 };
 
 Node *program();

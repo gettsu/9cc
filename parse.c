@@ -49,8 +49,15 @@ Node *stmt() {
     return node;
 }
 
-// expr = equality
-Node *expr() { return equality(); }
+// expr = assign
+Node *expr() { return assign(); }
+
+// assign = equeality ("=" assign)?
+Node *assign() {
+    Node *node = equality();
+    if (consume("=")) node = new_binary(ND_ASSIGN, node, assign());
+    return node;
+}
 
 // equality = relational ("==" relaional | "!=" relational)*
 Node *equality() {
@@ -115,11 +122,19 @@ Node *unary() {
     return primary();
 }
 
-// primary = "(" expr")"" | num
+// primary = "(" expr")"" | num | ident
 Node *primary() {
     if (consume("(")) {
         Node *node = expr();
         expect(")");
+        return node;
+    }
+
+    Token *tok = consume_ident();
+    if (tok) {
+        Node *node = calloc(1, sizeof(Node));
+        node->kind = ND_LVAR;
+        node->offset = (tok->str[0] - 'a' + 1) * 8;
         return node;
     }
 

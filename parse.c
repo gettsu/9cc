@@ -161,8 +161,6 @@ Node *primary() {
 
     Token *tok = consume_ident();
     if (tok) {
-        Node *node = calloc(1, sizeof(Node));
-        node->kind = ND_VAR;
         Var *var = find_var(tok);
         if (!var) {
             var = push_var(strndup(tok->str, tok->len));

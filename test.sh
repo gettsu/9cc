@@ -49,5 +49,6 @@ assert 0 '1>=2;'
 assert 3 '1; 2; 3;'
 
 assert 5 'foo = 3;bar=2;foo+bar;'
+assert 6 'hoge = 4; fuga  =2; return hoge+fuga;'
 
 echo OK

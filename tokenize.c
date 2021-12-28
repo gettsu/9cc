@@ -31,8 +31,8 @@ char *strndup(char *p, int len) {
 }
 // 次のトークンが期待している記号のときは，トークンを一つ読み進めて真を返す．
 bool consume(char *op) {
-    if (token->kind != TK_RESERVED || strlen(op) != token->len ||
-        memcmp(token->str, op, token->len))
+    if ((token->kind != TK_RESERVED && token->kind != TK_RETURN) ||
+        strlen(op) != token->len || memcmp(token->str, op, token->len))
         return false;
     token = token->next;
     return true;
@@ -111,6 +111,12 @@ Token *tokenize(char *p) {
             char *q = p;
             cur->val = strtol(p, &p, 10);
             cur->len = p - q;
+            continue;
+        }
+
+        if (strncmp(p, "return", 6) == 0 && !is_alnum(p[6])) {
+            cur = new_token(TK_RETURN, cur, p, 6);
+            p += 6;
             continue;
         }
 

@@ -45,16 +45,17 @@ typedef enum {
     ND_MUL,
     ND_DIV,
     ND_NUM,
-    ND_EQ,
-    ND_NE,
-    ND_LT,
-    ND_LE,
-    ND_ASSIGN,
-    ND_VAR,  // 変数
-    ND_RETURN,
-    ND_IF,
-    ND_WHILE,
-    ND_FOR,
+    ND_EQ,      // ==
+    ND_NE,      // !=
+    ND_LT,      // <
+    ND_LE,      // <=
+    ND_ASSIGN,  // =
+    ND_VAR,     // 変数
+    ND_RETURN,  // return
+    ND_IF,      // if()
+    ND_WHILE,   // while()
+    ND_FOR,     // for (;;)
+    ND_BLOCK,   // { ... }
 } NodeKind;
 
 typedef struct Node Node;
@@ -82,6 +83,9 @@ struct Node {
     // "for" statement
     Node *init;
     Node *inc;
+
+    // "block"
+    Node *body;
 
     int val;
     Var *var;

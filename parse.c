@@ -207,7 +207,10 @@ Node *unary() {
     return primary();
 }
 
-// primary = "(" expr")"" | num | ident
+/* primary = "(" expr")""
+            | num
+            | ident ("(" ")")?
+*/
 Node *primary() {
     if (consume("(")) {
         Node *node = expr();

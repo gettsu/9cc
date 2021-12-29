@@ -31,8 +31,8 @@ char *strndup(char *p, int len) {
 }
 // 次のトークンが期待している記号のときは，トークンを一つ読み進めて真を返す．
 bool consume(char *op) {
-    if ((token->kind != TK_RESERVED && token->kind != TK_RETURN) ||
-        strlen(op) != token->len || memcmp(token->str, op, token->len))
+    if ((token->kind != TK_RESERVED) || strlen(op) != token->len ||
+        memcmp(token->str, op, token->len))
         return false;
     token = token->next;
     return true;
@@ -84,6 +84,21 @@ bool is_alpha(char c) {
 
 bool is_alnum(char c) { return is_alpha(c) || ('0' <= c && c <= '9'); }
 
+char *starts_with_reserved(char *p) {
+    static char *kw[] = {"return", "if", "else"};
+
+    for (int i = 0; i < sizeof(kw) / sizeof(*kw); ++i) {
+        int len = strlen(kw[i]);
+        if (startswith(p, kw[i]) && !is_alnum(p[len])) return kw[i];
+    }
+    static char *ops[] = {"==", "!=", "<=", ">="};
+
+    for (int i = 0; i < sizeof(ops) / sizeof(*ops); ++i) {
+        if (startswith(p, ops[i])) return ops[i];
+    }
+    return NULL;
+}
+
 //入力文字pをトークナイズしてそれを返す
 Token *tokenize(char *p) {
     Token head;
@@ -95,12 +110,14 @@ Token *tokenize(char *p) {
             continue;
         }
 
-        if (startswith(p, "==") || startswith(p, "!=") || startswith(p, "<=") ||
-            startswith(p, ">=")) {
-            cur = new_token(TK_RESERVED, cur, p, 2);
-            p += 2;
+        char *kw = starts_with_reserved(p);
+        if (kw) {
+            int len = strlen(kw);
+            cur = new_token(TK_RESERVED, cur, p, len);
+            p += len;
             continue;
         }
+
         if (strchr("+-*/()<>=;", *p)) {
             cur = new_token(TK_RESERVED, cur, p++, 1);
             continue;
@@ -111,12 +128,6 @@ Token *tokenize(char *p) {
             char *q = p;
             cur->val = strtol(p, &p, 10);
             cur->len = p - q;
-            continue;
-        }
-
-        if (strncmp(p, "return", 6) == 0 && !is_alnum(p[6])) {
-            cur = new_token(TK_RETURN, cur, p, 6);
-            p += 6;
             continue;
         }
 

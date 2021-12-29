@@ -50,5 +50,9 @@ assert 3 '1; 2; 3;'
 
 assert 5 'foo = 3;bar=2;foo+bar;'
 assert 6 'hoge = 4; fuga  =2; return hoge+fuga;'
+assert 3 'if (0) return 2; return 3;'
+assert 3 'if (1-1) return 2; return 3;'
+assert 2 'if (1) return 2; return 3;'
+assert 2 'if (2-1) return 2; return 3;'
 
 echo OK

@@ -70,14 +70,26 @@ Program *program() {
     return prog;
 }
 
-// stmt = expr";" | "return" expr ";"
+/* stmt = expr";"
+        |"if""("expr")" stmt ("else" stmt)?
+        |"while" "(" expr ")" stmt
+        |"for" "(" expr? ";" expr? ";" expr?")" stmt
+        |"return" expr ";"
+*/
 
 Node *stmt() {
     Node *node;
     if (consume("return")) {
-        node = calloc(1, sizeof(Node));
-        node->kind = ND_RETURN;
+        node = new_node(ND_RETURN);
         node->lhs = expr();
+    } else if (consume("if")) {
+        node = new_node(ND_IF);
+        expect("(");
+        node->cond = expr();
+        expect(")");
+        node->then = stmt();
+        if (consume("else")) node->els = stmt();
+        return node;
     } else {
         node = expr();
     }

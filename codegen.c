@@ -49,9 +49,7 @@ void gen(Node *node) {
         case ND_RETURN:
             gen(node->lhs);
             printf("    pop rax\n");
-            printf("    mov rsp, rbp\n");
-            printf("    pop rbp\n");
-            printf("    ret\n");
+            printf("    jmp .Lreturn\n");
             return;
         case ND_NUM:
             printf("    push %d\n", node->val);
@@ -126,9 +124,8 @@ void codegen(Program *prog) {
 
     for (Node *node = prog->node; node; node = node->next) {
         gen(node);
-        printf("    pop rax\n");
     }
-
+    printf(".Lreturn:\n");
     printf("    mov rsp, rbp\n");
     printf("    pop rbp\n");
     printf("    ret\n");

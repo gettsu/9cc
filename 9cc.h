@@ -54,6 +54,7 @@ typedef enum {
     ND_RETURN,
     ND_IF,
     ND_WHILE,
+    ND_FOR,
 } NodeKind;
 
 typedef struct Node Node;
@@ -77,6 +78,10 @@ struct Node {
     Node *cond;
     Node *then;
     Node *els;
+
+    // "for" statement
+    Node *init;
+    Node *inc;
 
     int val;
     Var *var;

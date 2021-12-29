@@ -97,6 +97,23 @@ Node *stmt() {
         expect(")");
         node->then = stmt();
         return node;
+    } else if (consume("for")) {
+        node = new_node(ND_FOR);
+        expect("(");
+        if (!consume(";")) {
+            node->init = expr();
+            expect(";");
+        }
+        if (!consume(";")) {
+            node->cond = expr();
+            expect(";");
+        }
+        if (!consume(")")) {
+            node->inc = expr();
+            expect(")");
+        }
+        node->then = stmt();
+        return node;
     } else {
         node = expr();
     }

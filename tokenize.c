@@ -22,7 +22,7 @@ void error_at(char *loc, char *fmt, ...) {
     fprintf(stderr, "\n");
     exit(1);
 }
-
+// 文字列を複製
 char *strndup(char *p, int len) {
     char *buf = malloc(len + 1);
     strncpy(buf, p, len);

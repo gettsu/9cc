@@ -1,6 +1,7 @@
 #include "9cc.h"
 
 int labelseq = 0;
+char *argreg[] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
 
 void gen_lval(Node *node) {
     if (node->kind != ND_VAR) error("代入の左辺が変数ではありません");
@@ -62,10 +63,21 @@ void gen(Node *node) {
             printf(".Lend%d:\n", seq);
             return;
         }
-        case ND_FUNCALL:
+        case ND_FUNCALL: {
+            int nargs = 0;
+            for (Node *arg = node->args; arg; arg = arg->next) {
+                gen(arg);
+                ++nargs;
+            }
+
+            for (int i = nargs - 1; i >= 0; --i) {
+                printf("    pop %s\n", argreg[i]);
+            }
+
             printf("    call %s\n", node->funcname);
             printf("    push rax\n");
             return;
+        }
         case ND_RETURN:
             gen(node->lhs);
             printf("    pop rax\n");

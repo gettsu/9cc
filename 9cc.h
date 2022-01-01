@@ -32,6 +32,7 @@ char *strndup(char *p, int len);
 Token *consume_ident();
 void expect(char *op);
 int expect_number();
+char *expect_ident();
 bool at_eof();
 Token *new_token(TokenKind kind, Token *cur, char *str, int len);
 Token *tokenize();
@@ -98,14 +99,17 @@ struct Node {
 
 Var *find_lvar(Token *tok);
 
-typedef struct {
+typedef struct Function Function;
+struct Function {
+    Function *next;
+    char *name;
     Node *node;
     Var *locals;
     int stack_size;
-} Program;
+};
 
-Program *program();
+Function *program();
 
-void codegen(Program *prog);
+void codegen(Function *prog);
 
 #endif

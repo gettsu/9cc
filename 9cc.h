@@ -65,10 +65,15 @@ typedef struct Node Node;
 typedef struct Var Var;
 
 struct Var {
-    Var *next;   // 次の変数orNULL
     char *name;  // 変数名
     int len;     // 名前の長さ
     int offset;  // RBPからのオフセット
+};
+
+typedef struct VarList VarList;
+struct VarList {
+    VarList *next;
+    Var *var;
 };
 
 struct Node {
@@ -104,7 +109,8 @@ struct Function {
     Function *next;
     char *name;
     Node *node;
-    Var *locals;
+    VarList *params;
+    VarList *locals;
     int stack_size;
 };
 

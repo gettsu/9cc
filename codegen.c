@@ -6,7 +6,8 @@ int labelseq = 0;
 char *funcname;
 
 void gen_lval(Node *node) {
-    if (node->kind != ND_VAR) error("代入の左辺が変数ではありません");
+    if (node->kind != ND_VAR)
+        error_tok(node->tok, "代入の左辺が変数ではありません");
 
     printf("    mov rax, rbp\n");
     printf("    sub rax, %d\n", node->var->offset);

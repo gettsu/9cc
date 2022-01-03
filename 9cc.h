@@ -27,7 +27,8 @@ struct Token {
 
 void error(char *fmt, ...);
 void error_at(char *loc, char *fmt, ...);
-bool consume(char *op);
+void error_tok(Token *tok, char *fmt, ...);
+Token *consume(char *op);
 char *strndup(char *p, int len);
 Token *consume_ident();
 void expect(char *op);
@@ -51,6 +52,8 @@ typedef enum {
     ND_LT,       // <
     ND_LE,       // <=
     ND_ASSIGN,   // =
+    ND_ADDR,     // unary &
+    ND_DEREF,    // unary *
     ND_VAR,      // 変数
     ND_RETURN,   // return
     ND_IF,       // if()
@@ -81,6 +84,7 @@ struct Node {
     Node *next;
     Node *lhs;
     Node *rhs;
+    Token *tok;
 
     // "if" statement
     Node *cond;

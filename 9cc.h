@@ -7,6 +7,8 @@
 #ifndef INCLUDE_9CC
 #define INCLUDE_9cc
 
+typedef struct Type Type;
+
 //トークンの種類
 typedef enum {
     TK_RESERVED,  // 記号
@@ -84,6 +86,8 @@ struct Node {
     Node *next;
     Node *lhs;
     Node *rhs;
+
+    Type *ty;
     Token *tok;
 
     // "if" statement
@@ -117,6 +121,15 @@ struct Function {
     VarList *locals;
     int stack_size;
 };
+
+typedef enum { TY_INT, TY_PTR } TypeKind;
+
+struct Type {
+    TypeKind kind;
+    Type *base;
+};
+
+void add_type(Function *prog);
 
 Function *program();
 

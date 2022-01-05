@@ -45,11 +45,16 @@ char *strndup(char *p, int len) {
     return buf;
 }
 
-// 次のトークンが期待している記号のときは，トークンを一つ読み進める
-Token *consume(char *op) {
-    if ((token->kind != TK_RESERVED) || strlen(op) != token->len ||
-        memcmp(token->str, op, token->len))
+Token *peek(char *s) {
+    if (token->kind != TK_RESERVED || strlen(s) != token->len ||
+        memcmp(token->str, s, token->len))
         return NULL;
+    return token;
+}
+
+// 次のトークンが期待している記号のときは，トークンを一つ読み進める
+Token *consume(char *s) {
+    if (!peek(s)) return NULL;
     Token *t = token;
     token = token->next;
     return t;
@@ -65,11 +70,8 @@ Token *consume_ident() {
 }
 
 // 次のトークンが期待している記号のときは，トークンを一つ読み進める．
-void expect(char *op) {
-    if (token->kind != TK_RESERVED || strlen(op) != token->len ||
-        memcmp(token->str, op, token->len)) {
-        error_tok(token, "expected \"%s\"", op);
-    }
+void expect(char *s) {
+    if (!peek(s)) error_tok(token, "expected \"%s\"", s);
     token = token->next;
 }
 
@@ -110,7 +112,7 @@ bool is_alpha(char c) {
 bool is_alnum(char c) { return is_alpha(c) || ('0' <= c && c <= '9'); }
 
 char *starts_with_reserved(char *p) {
-    static char *kw[] = {"return", "if", "else", "while", "for"};
+    static char *kw[] = {"return", "if", "else", "while", "for", "int"};
 
     for (int i = 0; i < sizeof(kw) / sizeof(*kw); ++i) {
         int len = strlen(kw[i]);

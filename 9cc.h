@@ -30,6 +30,7 @@ struct Token {
 void error(char *fmt, ...);
 void error_at(char *loc, char *fmt, ...);
 void error_tok(Token *tok, char *fmt, ...);
+Token *peek(char *s);
 Token *consume(char *op);
 char *strndup(char *p, int len);
 Token *consume_ident();
@@ -63,6 +64,7 @@ typedef enum {
     ND_FOR,      // for (;;)
     ND_BLOCK,    // { ... }
     ND_FUNCALL,  // Function call
+    ND_NULL,     // Empty statement
 } NodeKind;
 
 typedef struct Node Node;
@@ -73,6 +75,7 @@ struct Var {
     char *name;  // 変数名
     int len;     // 名前の長さ
     int offset;  // RBPからのオフセット
+    Type *ty;
 };
 
 typedef struct VarList VarList;
@@ -129,6 +132,8 @@ struct Type {
     Type *base;
 };
 
+Type *int_type();
+Type *pointer_to();
 void add_type(Function *prog);
 
 Function *program();

@@ -106,6 +106,8 @@ void gen(Node *node) {
             printf("    pop rax\n");
             printf("    jmp .Lreturn.%s\n", funcname);
             return;
+        case ND_NULL:
+            return;
         case ND_NUM:
             printf("    push %d\n", node->val);
             return;

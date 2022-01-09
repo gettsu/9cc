@@ -66,6 +66,7 @@ typedef enum {
     ND_BLOCK,    // { ... }
     ND_FUNCALL,  // Function call
     ND_NULL,     // Empty statement
+    ND_SIZEOF,   // "sizeof"
 } NodeKind;
 
 typedef struct Node Node;

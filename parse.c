@@ -334,6 +334,7 @@ Node *postfix() {
 /* primary = "(" expr")""
             | num
             | ident args?
+            | "sizeof" unary
     args = "("(assign ("," assign)*)?")"
 */
 Node *func_args() {
@@ -349,13 +350,16 @@ Node *func_args() {
     return head;
 }
 Node *primary() {
+    Token *tok;
+
     if (consume("(")) {
         Node *node = expr();
         expect(")");
         return node;
     }
 
-    Token *tok;
+    if (tok = consume("sizeof")) return new_unary(ND_SIZEOF, unary(), tok);
+
     if (tok = consume_ident()) {
         if (consume("(")) {
             Node *node = new_node(ND_FUNCALL, tok);

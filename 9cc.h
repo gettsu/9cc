@@ -76,8 +76,11 @@ typedef struct Var Var;
 struct Var {
     char *name;  // 変数名
     int len;     // 名前の長さ
-    int offset;  // RBPからのオフセット
     Type *ty;
+    bool is_local;  // local or global
+
+    // localなら
+    int offset;  // RBPからのオフセット
 };
 
 typedef struct VarList VarList;
@@ -140,10 +143,15 @@ Type *pointer_to();
 Type *array_of(Type *base, int size);
 int size_of(Type *ty);
 
-void add_type(Function *prog);
+typedef struct {
+    VarList *globals;
+    Function *fns;
+} Program;
 
-Function *program();
+Program *program();
 
-void codegen(Function *prog);
+void add_type(Program *prog);
+
+void codegen(Program *prog);
 
 #endif

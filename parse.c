@@ -114,10 +114,15 @@ Program *program() {
     return prog;
 }
 
-// basetype = "int" "*"*
+// basetype = "char | int" "*"*
 Type *basetype() {
-    expect("int");
-    Type *ty = int_type();
+    Type *ty;
+    if (consume("char")) {
+        ty = char_type();
+    } else {
+        expect("int");
+        ty = int_type();
+    }
     while (consume("*")) ty = pointer_to(ty);
     return ty;
 }
@@ -208,6 +213,8 @@ Node *declaration() {
     Node *node = new_binary(ND_ASSIGN, lhs, rhs, tok);
     return node;
 }
+
+bool is_typename() { return peek("char") || peek("int"); }
 /* stmt = expr";"
         |"if""("expr")" stmt ("else" stmt)?
         |"while" "(" expr ")" stmt
@@ -272,7 +279,7 @@ Node *stmt() {
         node->body = head.next;
         return node;
     }
-    if (tok = peek("int")) return declaration();
+    if (is_typename()) return declaration();
 
     Node *node = expr();
     expect(";");
